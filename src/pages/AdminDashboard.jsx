@@ -1,14 +1,35 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users, ShoppingCart, DollarSign, PackageOpen, LayoutDashboard, Settings, Activity } from 'lucide-react';
+import { Users, ShoppingCart, DollarSign, PackageOpen, LayoutDashboard, Settings, Activity, LogOut } from 'lucide-react';
+import { useAdminAuth } from '../context/AdminAuthContext';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, admin, logout } = useAdminAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/admin/login');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/admin/login');
+  };
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <div className="pt-24 min-h-screen bg-[#FAF8F5] dark:bg-[#111]">
       <div className="flex h-[calc(100vh-6rem)]">
         
         {/* Admin Sidebar */}
-        <div className="w-64 bg-white dark:bg-[#1A1A1A] border-r border-[var(--border)] overflow-y-auto hidden md:block">
-          <div className="p-6">
+        <div className="w-64 bg-white dark:bg-[#1A1A1A] border-r border-[var(--border)] overflow-y-auto hidden md:block flex flex-col">
+          <div className="p-6 flex-1">
             <h2 className="text-lg font-serif font-bold tracking-wider text-[#C8A951] mb-8">ADMIN PANEL</h2>
             <ul className="space-y-2">
               {[
@@ -26,6 +47,21 @@ const AdminDashboard = () => {
                 </li>
               ))}
             </ul>
+          </div>
+          
+          {/* Admin Info & Logout */}
+          <div className="p-6 border-t border-[var(--border)]">
+            <div className="mb-4 pb-4 border-b border-[var(--border)]">
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Logged in as</p>
+              <p className="font-semibold text-sm">{admin?.username || 'Admin'}</p>
+              <p className="text-xs text-gray-400">{admin?.email}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-sm transition-colors text-sm font-medium"
+            >
+              <LogOut size={16} /> Logout
+            </button>
           </div>
         </div>
 

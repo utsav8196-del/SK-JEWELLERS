@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, User, Heart, ShoppingBag, Menu, X, Moon, Sun } from 'lucide-react';
+import { Search, User, Heart, ShoppingBag, Menu, X, Moon, Sun, LogIn } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useCart } from '../../context/CartContext';
+import { useAdminAuth } from '../../context/AdminAuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navLinks = [
@@ -17,8 +18,10 @@ const navLinks = [
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
   const { cartCount, toggleCart } = useCart();
+  const { isAuthenticated, admin } = useAdminAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -102,6 +105,65 @@ const Navbar = () => {
                 </span>
               )}
             </button>
+            
+            {/* Admin Access */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className={`text-foreground hover:text-[#C8A951] transition-colors relative ${isAuthenticated ? 'text-[#C8A951]' : ''}`}
+                aria-label="Admin"
+              >
+                <LogIn size={20} />
+                {isAuthenticated && (
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full"></span>
+                )}
+              </button>
+              
+              {/* User Menu Dropdown */}
+              <AnimatePresence>
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1A1A1A] border border-[var(--border)] rounded-sm shadow-lg z-50"
+                  >
+                    {isAuthenticated ? (
+                      <>
+                        <div className="px-4 py-3 border-b border-[var(--border)]">
+                          <p className="text-xs text-gray-500 uppercase tracking-wider">Logged in</p>
+                          <p className="font-semibold text-sm">{admin?.username}</p>
+                        </div>
+                        <Link 
+                          to="/admin"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+                        >
+                          Admin Dashboard
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link 
+                          to="/admin/login"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="block px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors border-b border-[var(--border)] font-medium text-[#C8A951]"
+                        >
+                          Admin Login
+                        </Link>
+                        <Link 
+                          to="/admin/register"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="block px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+                        >
+                          Admin Register
+                        </Link>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
@@ -128,16 +190,49 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
-              <div className="flex space-x-6 pt-4 border-t border-[var(--border)]">
-                <button className="text-foreground hover:text-[#C8A951]">
-                  <Search size={20} />
-                </button>
-                <Link to="/account" className="text-foreground hover:text-[#C8A951]">
-                  <User size={20} />
-                </Link>
-                <Link to="/wishlist" className="text-foreground hover:text-[#C8A951]">
-                  <Heart size={20} />
-                </Link>
+              <div className="border-t border-[var(--border)] pt-4 space-y-3">
+                <div className="flex space-x-6 pb-4">
+                  <button className="text-foreground hover:text-[#C8A951]">
+                    <Search size={20} />
+                  </button>
+                  <Link to="/account" className="text-foreground hover:text-[#C8A951]">
+                    <User size={20} />
+                  </Link>
+                  <Link to="/wishlist" className="text-foreground hover:text-[#C8A951]">
+                    <Heart size={20} />
+                  </Link>
+                </div>
+                <div className="border-t border-[var(--border)] pt-3 space-y-2">
+                  {isAuthenticated ? (
+                    <>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold px-2">Admin: {admin?.username}</p>
+                      <Link 
+                        to="/admin"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-900 rounded transition-colors font-medium"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link 
+                        to="/admin/login"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-900 rounded transition-colors font-medium text-[#C8A951]"
+                      >
+                        Admin Login
+                      </Link>
+                      <Link 
+                        to="/admin/register"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-900 rounded transition-colors"
+                      >
+                        Admin Register
+                      </Link>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>

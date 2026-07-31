@@ -13,6 +13,9 @@ import Contact from './pages/Contact';
 import Auth from './pages/Auth';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminLogin from './pages/AdminLogin';
+import AdminRegister from './pages/AdminRegister';
+import { AdminAuthProvider } from './context/AdminAuthContext';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -26,29 +29,33 @@ function ScrollToTop() {
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <CartDrawer />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/collections" element={<Collections />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/account" element={<UserDashboard />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/checkout" element={<div className="pt-32 pb-20 min-h-screen container mx-auto px-4 max-w-2xl text-center"><h1 className="text-3xl font-serif mb-4">Checkout</h1><p>Mock Checkout Page. Integration with payment gateway would go here.</p></div>} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <AdminAuthProvider>
+      <Router>
+        <ScrollToTop />
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <CartDrawer />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/collections" element={<Collections />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/account" element={<UserDashboard />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/register" element={<AdminRegister />} />
+              <Route path="/checkout" element={<div className="pt-32 pb-20 min-h-screen container mx-auto px-4 max-w-2xl text-center"><h1 className="text-3xl font-serif mb-4">Checkout</h1><p>Mock Checkout Page. Integration with payment gateway would go here.</p></div>} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </AdminAuthProvider>
   );
 }
 
