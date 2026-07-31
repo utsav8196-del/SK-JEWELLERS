@@ -93,7 +93,7 @@ const productSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-}, { timestamps: true });
+}, { timestamps: true, suppressReservedKeysWarning: true });
 
 // Indexes for performance
 productSchema.index({ category: 1, status: 1 });
